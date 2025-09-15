@@ -50,12 +50,12 @@
 
 ## 📋 BACKLOG (Next Sprint Candidates)
 
-**SP-005: HTTP Dynamic Routing Testing [5 SP]**
-- [ ] Create test config with HTTP mode routes
-- [ ] Test ?porty_host=X&porty_port=Y query parameter routing
-- [ ] Verify query parameter stripping and clean forwarding
-- [ ] End-to-end HTTP proxy testing
-- **Dependency**: BLOCKER-001 (for compilation)
+**SP-005: HTTP Dynamic Routing Testing [5 SP]** ✅
+- ✅ Create test config with HTTP mode routes
+- ✅ Test ?porty_host=X&porty_port=Y query parameter routing
+- ✅ Verify query parameter stripping and clean forwarding
+- ✅ End-to-end HTTP proxy testing
+- ✅ Production-ready dynamic routing verified
 
 **SP-006: CLI Arguments Global Context [3 SP]**
 - [ ] Test --listen-port, --target-port via RSB global context
@@ -124,9 +124,9 @@
 ## 📊 Sprint Metrics
 
 **Current Sprint Progress:**
-- **Completed**: 29 SP
-- **Blocked**: 2 items (high/medium priority)
-- **Ready for Next Sprint**: 33 SP in backlog
+- **Completed**: 34 SP (+5 from SP-005)
+- **Blocked**: 0 items (all blockers resolved)
+- **Ready for Next Sprint**: 28 SP in backlog
 
 **Key Achievements:**
 - 78% code reduction in main.rs while gaining features
