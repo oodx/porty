@@ -22,6 +22,7 @@ pub async fn run_route(
     log_requests: bool,
     verbose: bool,
     mode: &str,  // "tcp" or "http"
+    host: Option<String>,  // Host header matching for HTTP routes
 ) -> Result<()> {
     let semaphore = Arc::new(Semaphore::new(max_connections));
     let listen_addr_full = format!("{}:{}", listen_addr, listen_port);
@@ -40,6 +41,7 @@ pub async fn run_route(
         let buffer_size = buffer_size_kb * 1024;
         let route_name = name.to_string();
         let route_mode = mode.to_string();
+        let route_host = host.clone();
 
         tokio::spawn(async move {
             let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
@@ -57,8 +59,8 @@ pub async fn run_route(
 
             // Route based on mode: TCP or HTTP
             let connection_result = if route_mode == "http" {
-                // Use HTTP handler for dynamic routing
-                match handle_http_connection(client, route_name.clone(), log_requests, verbose).await {
+                // Use HTTP handler for dynamic routing and host header matching
+                match handle_http_connection(client, route_name.clone(), target_addr.clone(), route_host, log_requests, verbose).await {
                     Ok(_) => Ok(()),
                     Err(e) => Err(e),
                 }
@@ -189,6 +191,7 @@ pub async fn run_porty_server(config: Config) -> Result<()> {
                 log_requests,
                 verbose,
                 &route_mode,
+                route.host.clone(),
             ).await {
                 error!("Route {} failed: {}", route.name, e);
             }
@@ -207,6 +210,7 @@ pub async fn run_porty_server(config: Config) -> Result<()> {
         config.log_requests,
         is_true("opt_verbose"),
         "tcp",  // Main route defaults to TCP
+        None,   // Main route has no host matching
     ).await?;
 
     Ok(())

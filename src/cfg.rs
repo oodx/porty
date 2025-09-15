@@ -114,6 +114,15 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 host: None,
             },
             Route {
+                name: "api-host-routing".to_string(),
+                listen_port: 9080,
+                target_addr: "api.example.com".to_string(),
+                target_port: 80,
+                enabled: false,
+                mode: "http".to_string(),
+                host: Some("api.example.com".to_string()),
+            },
+            Route {
                 name: "ssh".to_string(),
                 listen_port: 2222,
                 target_addr: "127.0.0.1".to_string(),

@@ -31,6 +31,8 @@ pub struct ResponseInfo {
 pub async fn handle_http_connection(
     mut client: TcpStream,
     route_name: String,
+    default_target: String,
+    route_host: Option<String>,
     log_requests: bool,
     verbose: bool,
 ) -> Result<()> {
@@ -39,8 +41,44 @@ pub async fn handle_http_connection(
     // Parse HTTP request
     let request = parse_http_request(&mut client).await?;
 
-    // Check for dynamic routing parameters
-    let dynamic_route = extract_dynamic_route(&request.query)?;
+    // Check for host header matching first (if configured)
+    let target_route = if let Some(expected_host) = &route_host {
+        if let Some(incoming_host) = request.headers.get("host") {
+            if incoming_host == expected_host {
+                // Host header matches, use configured route target
+                let parts: Vec<&str> = default_target.split(':').collect();
+                Some(DynamicRoute {
+                    target_host: parts[0].to_string(),
+                    target_port: parts.get(1)
+                        .and_then(|p| p.parse().ok())
+                        .unwrap_or(80),
+                })
+            } else {
+                // Host header doesn't match, check for dynamic routing fallback
+                extract_dynamic_route(&request.query)?
+            }
+        } else {
+            // No host header, check for dynamic routing fallback
+            extract_dynamic_route(&request.query)?
+        }
+    } else {
+        // No host matching configured, check for dynamic routing
+        extract_dynamic_route(&request.query)?
+    };
+
+    // If no route determined, use default target
+    let dynamic_route = target_route.or_else(|| {
+        // Parse default target as fallback
+        let parts: Vec<&str> = default_target.split(':').collect();
+        if parts.len() == 2 {
+            Some(DynamicRoute {
+                target_host: parts[0].to_string(),
+                target_port: parts[1].parse().unwrap_or(80),
+            })
+        } else {
+            None
+        }
+    });
 
     if let Some(route) = dynamic_route {
         if log_requests {

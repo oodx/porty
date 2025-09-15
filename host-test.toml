@@ -1,0 +1,38 @@
+# Host Header Routing Test Configuration
+
+# Main TCP route (traditional forwarding)
+listen_addr = "0.0.0.0"
+listen_port = 5080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+# Host-based HTTP routing
+[[routes]]
+name = "api-host"
+listen_port = 5090
+target_addr = "httpbin.org"
+target_port = 80
+enabled = true
+mode = "http"
+host = "api.test.com"
+
+[[routes]]
+name = "docs-host"
+listen_port = 5090  # Same port, different host
+target_addr = "jsonplaceholder.typicode.com"
+target_port = 80
+enabled = true
+mode = "http"
+host = "docs.test.com"
+
+[[routes]]
+name = "dynamic-fallback"
+listen_port = 5091
+target_addr = "unused"
+target_port = 0
+enabled = true
+mode = "http"
+# No host field = dynamic routing only

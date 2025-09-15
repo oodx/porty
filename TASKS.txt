@@ -57,22 +57,40 @@
 - ✅ End-to-end HTTP proxy testing
 - ✅ Production-ready dynamic routing verified
 
-**SP-006: CLI Arguments Global Context [3 SP]**
-- [ ] Test --listen-port, --target-port via RSB global context
-- [ ] Verify --verbose, --daemon flags work with opt_* variables
-- [ ] Test config file overrides via --config
-- **Status**: Architecture complete, needs testing
+**SP-006: CLI Arguments Global Context [3 SP]** ✅
+- ✅ Test --listen-port, --target-port via RSB global context
+- ✅ Verify --verbose, --daemon flags work with opt_* variables
+- ✅ Test config file overrides via --config
+- ✅ All RSB opt_* variables working perfectly
 
 **SP-007: Default Command Configuration [2 SP]**
 - [ ] Configure RSB to default to 'start' command when no args
 - [ ] Currently shows help instead of starting server
 - [ ] Improve UX for default behavior
 
-**SP-008: Advanced HTTP Features [8 SP]**
-- [ ] Host header matching (route.host field)
-- [ ] HTTP request logging with detailed headers
-- [ ] Response size tracking for HTTP routes
-- [ ] Error handling for malformed HTTP requests
+**SP-008a: Host Header Routing [3 SP]**
+- [ ] Add optional `host` field to route config
+- [ ] Implement Host header matching in http.rs
+- [ ] Route requests based on Host header + dynamic routing
+- [ ] Test multi-domain routing scenarios
+
+**SP-008b: Enhanced HTTP Logging [2 SP]**
+- [ ] Add detailed request header logging
+- [ ] Log response status codes and sizes
+- [ ] Configurable log levels for HTTP routes
+- [ ] Performance metrics (response time tracking)
+
+**SP-008c: HTTP Error Handling [3 SP]**
+- [ ] Graceful handling of malformed HTTP requests
+- [ ] Timeout handling for slow backends
+- [ ] Connection error recovery and retry logic
+- [ ] Custom error pages for HTTP routes
+
+**SP-008d: HTTP Cookie Support [3 SP]**
+- [ ] Parse and forward cookies from client requests
+- [ ] Handle Set-Cookie headers from backend responses
+- [ ] Cookie-based session routing (sticky sessions)
+- [ ] Cookie modification and injection for routing
 
 **SP-009: Documentation & Examples [5 SP]**
 - [ ] Create example configs showcasing HTTP dynamic routing
