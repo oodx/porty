@@ -422,11 +422,4 @@ With `--verbose`, see detailed transfer information:
 
 ## License
 
-[Add your license here]
-
-## Branches
-
-- **`main`**: Stable version with Clap CLI (3.7MB binary)
-- **`feature/rsb-integration`**: Enhanced version with RSB framework (4.1MB binary)
-
-Choose the branch that best fits your needs - `main` for minimal size, `feature/rsb-integration` for advanced features and ecosystem integration.
+AGPL License - See LICENSE file for details
