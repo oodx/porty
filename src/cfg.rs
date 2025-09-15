@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
+use rsb::prelude::*;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Route {
@@ -77,9 +78,9 @@ impl Default for Config {
 
 pub fn load_config(path: &PathBuf) -> Result<Config> {
     if !path.exists() {
-        println!("⚠️  Config file not found at: {}", path.display());
-        println!("   Using default configuration...");
-        println!("   Run 'porty --generate-config' to create an example config file");
+        echo!("⚠️  Config file not found at: {}", path.display());
+        echo!("   Using default configuration...");
+        echo!("   Run 'porty --generate-config' to create an example config file");
         return Ok(Config::default());
     }
 
@@ -138,8 +139,8 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
     );
 
     fs::write(path, commented_toml)?;
-    println!("✅ Example config file created at: {}", path.display());
-    println!("   Edit this file to configure your port forwarding rules");
+    echo!("✅ Example config file created at: {}", path.display());
+    echo!("   Edit this file to configure your port forwarding rules");
 
     Ok(())
 }

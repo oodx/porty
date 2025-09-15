@@ -5,6 +5,7 @@ use chrono::Local;
 use std::collections::HashMap;
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpStream;
+use rsb::prelude::*;
 
 #[derive(Debug, Clone)]
 pub struct HttpRequest {
@@ -44,18 +45,18 @@ pub async fn handle_http_connection(
     if let Some(route) = dynamic_route {
         if log_requests {
             let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
-            println!(
+            echo!(
                 "🔄 [{}] {} | {} {}?{}",
                 route_name, timestamp, request.method, request.path, request.query
             );
-            println!("   ├─ From: {}", client_addr);
-            println!(
+            echo!("   ├─ From: {}", client_addr);
+            echo!(
                 "   ├─ To: {}:{} (dynamic)",
                 route.target_host, route.target_port
             );
             if verbose {
                 for (key, value) in &request.headers {
-                    println!("   ├─ {}: {}", key, value);
+                    echo!("   ├─ {}: {}", key, value);
                 }
             }
         }
@@ -68,7 +69,7 @@ pub async fn handle_http_connection(
                 if log_requests {
                     let duration = start_time.elapsed();
                     let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
-                    println!(
+                    echo!(
                         "✅ [{}] {} | {} ({:.0}ms)",
                         route_name,
                         timestamp,
@@ -76,14 +77,14 @@ pub async fn handle_http_connection(
                         duration.as_millis()
                     );
                     if verbose {
-                        println!("   └─ Body: {} bytes", response_info.body_size);
+                        echo!("   └─ Body: {} bytes", response_info.body_size);
                     }
                 }
             }
             Err(e) => {
                 if log_requests {
                     let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
-                    println!("❌ [{}] {} | Error: {}", route_name, timestamp, e);
+                    stderr!("❌ [{}] {} | Error: {}", route_name, timestamp, e);
                 }
                 return Err(e);
             }

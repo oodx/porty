@@ -24,12 +24,16 @@ fn main() {
         return;
     }
 
-    // Main command dispatch (defaults to start)
-    dispatch!(&args, {
-        "start" => cmd_start,
-        "help" => cmd_help,
-        "version" => cmd_version
-    });
+    // Default to 'start' if no command given
+    let command = args.get_or(1, "start");
+
+    // Main command dispatch
+    match command.as_str() {
+        "start" => std::process::exit(cmd_start(args)),
+        "help" => std::process::exit(cmd_help(args)),
+        "version" => std::process::exit(cmd_version(args)),
+        _ => std::process::exit(cmd_start(args)), // Unknown commands also default to start
+    }
 }
 
 fn cmd_start(args: Args) -> i32 {
