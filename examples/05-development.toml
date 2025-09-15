@@ -1,0 +1,86 @@
+# Development Workflow Configuration
+# Perfect for API development, testing, and local service integration
+
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 50
+buffer_size_kb = 8
+log_requests = true
+
+# Frontend development server
+[[routes]]
+name = "frontend-dev"
+listen_port = 3000
+target_addr = "127.0.0.1"
+target_port = 5173              # Vite dev server
+enabled = true
+mode = "tcp"
+
+# Backend API with hot reloading
+[[routes]]
+name = "backend-api"
+listen_port = 8000
+target_addr = "127.0.0.1"
+target_port = 8080
+enabled = true
+mode = "http"
+host = "api.localhost"
+log_level = "verbose"           # Full debugging for development
+timeout_seconds = 60            # Long timeout for debugging
+max_retries = 0                 # Fail fast to see errors immediately
+
+# Dynamic testing proxy for different environments
+[[routes]]
+name = "test-proxy"
+listen_port = 9000
+target_addr = "localhost"
+target_port = 8080
+enabled = true
+mode = "http"
+log_level = "verbose"
+timeout_seconds = 30
+max_retries = 1
+
+# Mock service simulator
+[[routes]]
+name = "mock-services"
+listen_port = 9001
+target_addr = "127.0.0.1"
+target_port = 3001              # JSON Server or similar
+enabled = true
+mode = "http"
+host = "mock.localhost"
+log_level = "verbose"
+timeout_seconds = 10
+max_retries = 2
+
+# Database development proxy
+[[routes]]
+name = "dev-db"
+listen_port = 5433
+target_addr = "127.0.0.1"
+target_port = 5432
+enabled = true
+mode = "tcp"
+
+# Usage Examples for Development:
+# ./porty start --config=examples/05-development.toml
+#
+# Frontend development:
+# curl http://localhost:3000                    # -> Vite dev server
+#
+# Backend API testing:
+# curl -H "Host: api.localhost" http://localhost:8000/users
+#
+# Dynamic environment switching:
+# curl "http://localhost:9000/api/users?porty_host=staging.api.com&porty_port=443"
+# curl "http://localhost:9000/api/users?porty_host=localhost&porty_port=8080"
+# curl "http://localhost:9000/api/users?porty_host=prod.api.com&porty_port=80"
+#
+# Mock service testing:
+# curl -H "Host: mock.localhost" http://localhost:9001/users
+#
+# Database connection:
+# psql -h localhost -p 5433

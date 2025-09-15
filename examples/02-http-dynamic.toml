@@ -1,0 +1,31 @@
+# HTTP Dynamic Routing
+# Route to ANY backend via query parameters - zero configuration proxy!
+
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"  # Main route fallback
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+[[routes]]
+name = "dynamic-proxy"
+listen_port = 9090
+target_addr = "unused"      # Will be overridden by query parameters
+target_port = 0
+enabled = true
+mode = "http"               # Enable HTTP dynamic routing!
+log_level = "verbose"       # Show all routing details
+timeout_seconds = 10        # 10-second timeout for backends
+max_retries = 3             # Retry failed connections 3 times
+
+# Usage Examples:
+# ./porty start --config=examples/02-http-dynamic.toml
+#
+# Route to any backend dynamically:
+# curl "http://localhost:9090/api/users?porty_host=api.example.com&porty_port=80"
+# curl "http://localhost:9090/health?porty_host=localhost&porty_port=8000"
+# curl "http://localhost:9090/data?id=123&porty_host=staging.internal&porty_port=3000"
+#
+# Query parameters are automatically stripped from forwarded requests!

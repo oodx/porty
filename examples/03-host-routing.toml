@@ -1,0 +1,60 @@
+# Host Header Routing
+# Route requests based on Host headers with fallback to dynamic routing
+
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+# API service routing based on Host header
+[[routes]]
+name = "api-service"
+listen_port = 9080
+target_addr = "internal-api.company.com"
+target_port = 443
+enabled = true
+mode = "http"
+host = "api.example.com"        # Route requests with this Host header
+log_level = "verbose"
+timeout_seconds = 15
+max_retries = 2
+
+# Web service with different host
+[[routes]]
+name = "web-service"
+listen_port = 9081
+target_addr = "web-server.internal"
+target_port = 80
+enabled = true
+mode = "http"
+host = "www.example.com"        # Different Host header
+log_level = "basic"
+timeout_seconds = 10
+max_retries = 3
+
+# Multi-tenant service - fallback to dynamic routing if no host match
+[[routes]]
+name = "multi-tenant"
+listen_port = 9082
+target_addr = "default-tenant.internal"
+target_port = 8080
+enabled = true
+mode = "http"
+# No host field = accepts any host, can use dynamic routing
+log_level = "verbose"
+timeout_seconds = 20
+max_retries = 1
+
+# Usage Examples:
+# ./porty start --config=examples/03-host-routing.toml
+#
+# Host-based routing:
+# curl -H "Host: api.example.com" "http://localhost:9080/users"     # -> internal-api.company.com:443
+# curl -H "Host: www.example.com" "http://localhost:9081/home"      # -> web-server.internal:80
+#
+# Dynamic routing fallback on multi-tenant:
+# curl "http://localhost:9082/app?porty_host=tenant1.internal&porty_port=8080"
+# curl "http://localhost:9082/app?porty_host=tenant2.internal&porty_port=8080"

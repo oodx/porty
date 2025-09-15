@@ -10,6 +10,7 @@ A lightweight, high-performance TCP/HTTP port forwarder and dynamic proxy built 
 - **Zero-configuration proxy**: HTTP mode enables fully dynamic routing without config changes
 - **Connection pooling**: Configurable connection limits with semaphore-based control
 - **Enhanced HTTP Logging**: Configurable log levels (none/basic/verbose) with response status codes, sizes, and timing
+- **HTTP Error Handling**: Robust error handling with timeouts, retries, and custom error pages
 - **Host Header Routing**: Route based on Host headers with config-driven backend mapping
 - **RSB framework**: Professional CLI with built-in commands (help, inspect, stack)
 - **Lightweight**: ~4MB binary with minimal dependencies
@@ -43,6 +44,36 @@ cargo build --release
 # Run as daemon
 ./porty --daemon
 ```
+
+## Examples
+
+Porty includes comprehensive configuration examples in the `examples/` directory. Each example demonstrates different features and use cases:
+
+### Quick Examples
+
+```bash
+# Basic TCP forwarding
+./porty start --config=examples/01-basic-tcp.toml
+
+# HTTP dynamic routing (route to ANY backend!)
+./porty start --config=examples/02-http-dynamic.toml
+curl "http://localhost:9090/api?porty_host=api.example.com&porty_port=80"
+
+# Host header routing
+./porty start --config=examples/03-host-routing.toml
+curl -H "Host: api.example.com" "http://localhost:9080/users"
+
+# Production-ready with error handling
+./porty start --config=examples/04-production-ready.toml
+
+# Development workflow
+./porty start --config=examples/05-development.toml
+
+# Comprehensive feature showcase
+./porty start --config=examples/06-comprehensive.toml
+```
+
+**📁 See [`examples/README.md`](examples/README.md) for detailed documentation and usage guide.**
 
 ## Configuration
 
@@ -161,6 +192,46 @@ log_level = "basic"    # Options: "none", "basic", "verbose"
    └─ Body: 1,234 bytes
 ```
 
+### HTTP Error Handling (✨ NEW!)
+
+Configure robust error handling for HTTP routes with timeouts, retries, and custom error pages:
+
+```toml
+[[routes]]
+name = "production-api"
+listen_port = 8080
+mode = "http"
+timeout_seconds = 10    # Backend connection timeout
+max_retries = 3         # Retry attempts with exponential backoff
+log_level = "verbose"   # Enhanced error logging
+```
+
+**Error Handling Features:**
+- **Malformed Request Validation** - Graceful handling of invalid HTTP requests with descriptive error messages
+- **Connection Timeouts** - Configurable timeouts prevent hanging on slow backends
+- **Retry Logic** - Exponential backoff retries (100ms, 200ms, 400ms) for transient failures
+- **Custom Error Pages** - Professional HTTP error responses (400, 502, 504) with proper headers
+
+**Error Response Examples:**
+```bash
+# Missing routing parameters → 400 Bad Request
+curl "http://localhost:8080/api"
+# HTTP/1.1 400 Bad Request
+# Content-Type: text/plain
+# 400 Missing porty_host and porty_port parameters
+
+# Backend connection failure → 502 Bad Gateway (after retries)
+curl "http://localhost:8080/api?porty_host=down-service&porty_port=8080"
+# HTTP/1.1 502 Bad Gateway
+# Content-Type: text/plain
+# 502 Backend connection failed after retries
+```
+
+**Configuration Options:**
+- `timeout_seconds` - Backend connection timeout (default: 30)
+- `max_retries` - Maximum retry attempts (default: 2)
+- `log_level` - Error detail logging: "none", "basic", "verbose"
+
 ### Multiple Routes
 
 Configure multiple forwarding rules in `config.toml`:
@@ -225,15 +296,50 @@ Options:
 
 ## Architecture
 
-Porty demonstrates the power of the RSB framework with an incredibly lean architecture:
+Porty demonstrates the power of the **RSB (Rebel String-Biased) framework** with an incredibly lean and professional architecture:
 
-- **`main.rs`**: Just 27 lines! RSB dispatch pattern and command routing
-- **`args.rs`**: RSB CLI integration (can be removed after full migration)
-- **`cfg.rs`**: Configuration file handling and generation
-- **`net.rs`**: TCP/HTTP routing logic and connection management
-- **`http.rs`**: HTTP parsing and dynamic routing implementation
+### RSB Framework Integration
 
-The RSB transformation achieved **78% code reduction** in main.rs (122 → 27 lines) while gaining professional CLI features like built-in help, inspect, and stack commands.
+**Core Benefits Achieved:**
+- **78% code reduction** in main.rs (122 → 27 lines) while gaining features
+- **Professional CLI** with built-in commands: `help`, `inspect`, `stack`
+- **Global context management** via `opt_*` variables
+- **Structured output** using `echo!()` and `stderr!()` macros
+- **Zero-configuration dispatch** with automatic command routing
+
+**File Structure:**
+- **`main.rs`**: Just 27 lines! RSB dispatch pattern with `dispatch!()` and `pre_dispatch!()`
+- **`cfg.rs`**: Configuration file handling and generation using RSB patterns
+- **`net.rs`**: TCP/HTTP routing logic with RSB context integration
+- **`http.rs`**: HTTP parsing and dynamic routing with RSB error handling
+
+### RSB Patterns in Action
+
+**Dispatch Pattern:**
+```rust
+// main.rs - Complete application in 27 lines!
+dispatch!("start", || run_porty_server(config));
+```
+
+**Global Context:**
+```rust
+// Access CLI arguments anywhere
+if is_true("opt_verbose") { /* verbose logging */ }
+let port = get_from_context("opt_listen_port").unwrap_or(8080);
+```
+
+**Structured Output:**
+```rust
+echo!("🚀 Porty v0.1.0 starting up");
+stderr!("❌ Connection failed: {}", error);
+```
+
+**Professional Commands:**
+```bash
+./porty help       # Built-in help system
+./porty inspect    # Runtime inspection
+./porty stack      # Debug stack traces
+```
 
 ### Performance Characteristics
 
@@ -266,7 +372,10 @@ The RSB transformation achieved **78% code reduction** in main.rs (122 → 27 li
 | `target_port` | integer | required | Target server port |
 | `enabled` | boolean | false | Enable/disable route |
 | `mode` | string | "tcp" | Protocol mode: "tcp" or "http" |
-| `host` | string | optional | Host header matching (future) |
+| `host` | string | optional | Host header matching for HTTP routes |
+| `log_level` | string | "basic" | Logging detail: "none", "basic", "verbose" |
+| `timeout_seconds` | integer | 30 | Backend connection timeout (HTTP mode) |
+| `max_retries` | integer | 2 | Maximum retry attempts (HTTP mode) |
 
 ## Logging Output
 

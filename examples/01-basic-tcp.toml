@@ -1,0 +1,14 @@
+# Basic TCP Port Forwarding
+# Simple forwarding from port 8080 to localhost:3000
+
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+# Usage:
+# ./porty start --config=examples/01-basic-tcp.toml
+# curl http://localhost:8080  # -> forwards to localhost:3000

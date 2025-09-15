@@ -1,0 +1,112 @@
+# Comprehensive Feature Showcase
+# Demonstrates all Porty capabilities in a single configuration
+
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 200
+buffer_size_kb = 16
+log_requests = true
+
+# 1. Basic HTTP with Host Header Routing
+[[routes]]
+name = "web-app"
+listen_port = 80
+target_addr = "web-server.internal"
+target_port = 8080
+enabled = true
+mode = "http"
+host = "www.example.com"
+log_level = "basic"
+timeout_seconds = 15
+max_retries = 3
+
+# 2. API with Dynamic Routing + Host Header Fallback
+[[routes]]
+name = "api-gateway"
+listen_port = 443
+target_addr = "api-server.internal"
+target_port = 443
+enabled = true
+mode = "http"
+host = "api.example.com"        # Host-based routing
+log_level = "verbose"           # Full request/response logging
+timeout_seconds = 10            # Fast timeout for APIs
+max_retries = 2                 # Retry failed connections
+
+# 3. Zero-Config Dynamic Proxy (accepts any host)
+[[routes]]
+name = "universal-proxy"
+listen_port = 9090
+target_addr = "default.internal"
+target_port = 8080
+enabled = true
+mode = "http"
+# No host field = accepts any host + enables dynamic routing
+log_level = "verbose"
+timeout_seconds = 30
+max_retries = 1
+
+# 4. High-Performance TCP Forwarding
+[[routes]]
+name = "tcp-service"
+listen_port = 6379
+target_addr = "redis.internal"
+target_port = 6379
+enabled = true
+mode = "tcp"                    # Raw TCP forwarding
+
+# 5. Development/Testing Route with Error Simulation
+[[routes]]
+name = "test-service"
+listen_port = 8081
+target_addr = "test.internal"
+target_port = 8080
+enabled = true
+mode = "http"
+host = "test.localhost"
+log_level = "verbose"
+timeout_seconds = 5             # Short timeout to test error handling
+max_retries = 5                 # Many retries for testing
+
+# 6. Load Balancer Simulation
+[[routes]]
+name = "load-balancer"
+listen_port = 8082
+target_addr = "backend1.internal"
+target_port = 8080
+enabled = true
+mode = "http"
+log_level = "basic"
+timeout_seconds = 20
+max_retries = 2
+
+# Usage Examples - ALL FEATURES:
+# ./porty start --config=examples/06-comprehensive.toml
+#
+# 1. Host-based routing:
+# curl -H "Host: www.example.com" http://localhost:80/
+# curl -H "Host: api.example.com" https://localhost:443/v1/users
+#
+# 2. Dynamic routing (any backend):
+# curl "http://localhost:9090/service?porty_host=backend1.com&porty_port=8080"
+# curl "http://localhost:9090/service?porty_host=backend2.com&porty_port=9000"
+# curl "http://localhost:9090/service?porty_host=external.api.com&porty_port=443"
+#
+# 3. Load balancing with dynamic backends:
+# curl "http://localhost:8082/health?porty_host=backend1.internal&porty_port=8080"
+# curl "http://localhost:8082/health?porty_host=backend2.internal&porty_port=8080"
+# curl "http://localhost:8082/health?porty_host=backend3.internal&porty_port=8080"
+#
+# 4. Error handling testing:
+# curl -H "Host: test.localhost" http://localhost:8081/error  # Tests timeout/retry
+#
+# 5. TCP service:
+# redis-cli -p 6379  # Raw TCP forwarding to Redis
+#
+# 6. Mixed protocol setup:
+# - HTTP routes with host headers, dynamic routing, error handling
+# - TCP routes for databases, caches, raw protocols
+# - Comprehensive logging at different levels
+# - Production-ready timeouts and retry configuration
