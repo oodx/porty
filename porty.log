@@ -1,0 +1,52 @@
+🚀 Porty v0.1.0 starting up
+📁 Config loaded from: http-test.toml
+🔊 Main route: 0.0.0.0:7080 -> 127.0.0.1:3000
+🔊 Additional route 'dynamic-http': 0.0.0.0:7090 -> unused:0
+🔊 Additional route 'tcp-forward': 0.0.0.0:7081 -> 127.0.0.1:3001
+[2025-09-15T05:52:35Z INFO  porty::net] [main] Listening on 0.0.0.0:7080 -> 127.0.0.1:3000
+[2025-09-15T05:52:35Z INFO  porty::net] [dynamic-http] Listening on 0.0.0.0:7090 -> unused:0
+[2025-09-15T05:52:35Z INFO  porty::net] [tcp-forward] Listening on 0.0.0.0:7081 -> 127.0.0.1:3001
+🔄 [dynamic-http] 2025-09-14 23:52:45.014 | New connection from 127.0.0.1:59628 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:52:45.014 | GET /api/test?porty_host=httpbin.org&porty_port=80&color=blue
+   ├─ From: 127.0.0.1:59628
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ user-agent: curl/8.5.0
+   ├─ accept: */*
+   ├─ host: localhost:7090
+🔄 [dynamic-http] 2025-09-14 23:53:04.160 | New connection from 127.0.0.1:36884 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:53:04.161 | GET /get?porty_host=httpbin.org&porty_port=80&test_param=hello
+   ├─ From: 127.0.0.1:36884
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ host: localhost:7090
+   ├─ user-agent: curl/8.5.0
+   ├─ accept: */*
+🔄 [dynamic-http] 2025-09-14 23:53:13.902 | New connection from 127.0.0.1:58302 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:53:13.902 | GET /ip?porty_host=httpbin.org&porty_port=80
+   ├─ From: 127.0.0.1:58302
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ user-agent: curl/8.5.0
+   ├─ accept: */*
+   ├─ host: localhost:7090
+🔄 [dynamic-http] 2025-09-14 23:53:18.352 | New connection from 127.0.0.1:42266 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:53:18.352 | GET /headers?porty_host=httpbin.org&porty_port=80
+   ├─ From: 127.0.0.1:42266
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ host: localhost:7090
+   ├─ accept: */*
+   ├─ user-agent: curl/8.5.0
+🔄 [dynamic-http] 2025-09-14 23:53:23.075 | New connection from 127.0.0.1:42282 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:53:23.075 | POST /post?porty_host=httpbin.org&porty_port=80
+   ├─ From: 127.0.0.1:42282
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ user-agent: curl/8.5.0
+   ├─ accept: */*
+   ├─ content-length: 16
+   ├─ host: localhost:7090
+   ├─ content-type: application/json
+🔄 [dynamic-http] 2025-09-14 23:53:27.939 | New connection from 127.0.0.1:41910 -> forwarding to unused:0
+🔄 [dynamic-http] 2025-09-14 23:53:27.939 | GET /status/418?porty_host=httpbin.org&porty_port=80
+   ├─ From: 127.0.0.1:41910
+   ├─ To: httpbin.org:80 (dynamic)
+   ├─ accept: */*
+   ├─ host: localhost:7090
+   ├─ user-agent: curl/8.5.0
