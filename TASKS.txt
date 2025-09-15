@@ -74,11 +74,11 @@
 - [ ] Route requests based on Host header + dynamic routing
 - [ ] Test multi-domain routing scenarios
 
-**SP-008b: Enhanced HTTP Logging [2 SP]**
-- [ ] Add detailed request header logging
-- [ ] Log response status codes and sizes
-- [ ] Configurable log levels for HTTP routes
-- [ ] Performance metrics (response time tracking)
+**SP-008b: Enhanced HTTP Logging [2 SP]** ✅
+- ✅ Add detailed request header logging
+- ✅ Log response status codes and sizes
+- ✅ Configurable log levels for HTTP routes ("none", "basic", "verbose")
+- ✅ Performance metrics (response time tracking in ms)
 
 **SP-008c: HTTP Error Handling [3 SP]**
 - [ ] Graceful handling of malformed HTTP requests

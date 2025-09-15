@@ -9,7 +9,8 @@ A lightweight, high-performance TCP/HTTP port forwarder and dynamic proxy built 
 - **Multiple routes**: Configure unlimited forwarding rules with per-route protocol modes
 - **Zero-configuration proxy**: HTTP mode enables fully dynamic routing without config changes
 - **Connection pooling**: Configurable connection limits with semaphore-based control
-- **Rich logging**: Real-time connection tracking with transfer metrics and HTTP details
+- **Enhanced HTTP Logging**: Configurable log levels (none/basic/verbose) with response status codes, sizes, and timing
+- **Host Header Routing**: Route based on Host headers with config-driven backend mapping
 - **RSB framework**: Professional CLI with built-in commands (help, inspect, stack)
 - **Lightweight**: ~4MB binary with minimal dependencies
 - **High performance**: Tokio async runtime with zero-copy streaming
@@ -113,6 +114,52 @@ curl "http://localhost:9090/health?porty_host=localhost&porty_port=8000"
 - Forwards clean request: `GET /users?id=123` → `api.internal:3000`
 - Returns response with all headers and body intact
 - No configuration needed - fully dynamic routing!
+
+### Host Header Routing
+
+Configure static host-based routing for domain names:
+
+```toml
+[[routes]]
+name = "api-service"
+listen_port = 9080
+target_addr = "internal-api.company.com"
+target_port = 80
+mode = "http"
+host = "api.example.com"  # Route requests with this Host header
+log_level = "verbose"     # Detailed logging
+```
+
+```bash
+# This request will be routed to internal-api.company.com:80
+curl -H "Host: api.example.com" "http://localhost:9080/api/users"
+```
+
+### Enhanced HTTP Logging
+
+Configure logging detail per route:
+
+```toml
+[[routes]]
+name = "production-api"
+listen_port = 8080
+mode = "http"
+log_level = "basic"    # Options: "none", "basic", "verbose"
+```
+
+**Log Levels:**
+- `none` - No HTTP request/response logging
+- `basic` - Request summary with response status and timing
+- `verbose` - Full headers, body sizes, and performance metrics
+
+**Sample Output:**
+```
+🔄 [api-route] 2025-09-15 01:23:45.123 | GET /api/users?id=123
+   ├─ From: 192.168.1.100:54321
+   ├─ To: internal-api.com:80 (dynamic)
+✅ [api-route] 2025-09-15 01:23:45.234 | HTTP/1.1 200 OK (111ms)
+   └─ Body: 1,234 bytes
+```
 
 ### Multiple Routes
 

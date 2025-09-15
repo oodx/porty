@@ -35,6 +35,7 @@ pub async fn handle_http_connection(
     route_host: Option<String>,
     log_requests: bool,
     verbose: bool,
+    log_level: &str,
 ) -> Result<()> {
     let client_addr = client.peer_addr()?.to_string();
 
@@ -81,7 +82,7 @@ pub async fn handle_http_connection(
     });
 
     if let Some(route) = dynamic_route {
-        if log_requests {
+        if log_requests && log_level != "none" {
             let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
             echo!(
                 "🔄 [{}] {} | {} {}?{}",
@@ -92,7 +93,7 @@ pub async fn handle_http_connection(
                 "   ├─ To: {}:{} (dynamic)",
                 route.target_host, route.target_port
             );
-            if verbose {
+            if log_level == "verbose" || verbose {
                 for (key, value) in &request.headers {
                     echo!("   ├─ {}: {}", key, value);
                 }
@@ -104,7 +105,7 @@ pub async fn handle_http_connection(
         // Forward the cleaned request
         match forward_http_request(request, route, client).await {
             Ok(response_info) => {
-                if log_requests {
+                if log_requests && log_level != "none" {
                     let duration = start_time.elapsed();
                     let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
                     echo!(
@@ -114,7 +115,7 @@ pub async fn handle_http_connection(
                         response_info.status,
                         duration.as_millis()
                     );
-                    if verbose {
+                    if log_level == "verbose" || verbose {
                         echo!("   └─ Body: {} bytes", response_info.body_size);
                     }
                 }

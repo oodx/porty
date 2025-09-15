@@ -1,0 +1,39 @@
+# Enhanced HTTP Logging Test Configuration
+
+# Main route (basic logging)
+listen_addr = "0.0.0.0"
+listen_port = 4080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+# Different log level routes
+[[routes]]
+name = "silent-route"
+listen_port = 4090
+target_addr = "httpbin.org"
+target_port = 80
+enabled = true
+mode = "http"
+log_level = "none"
+
+[[routes]]
+name = "basic-route"
+listen_port = 4091
+target_addr = "httpbin.org"
+target_port = 80
+enabled = true
+mode = "http"
+log_level = "basic"
+
+[[routes]]
+name = "verbose-route"
+listen_port = 4092
+target_addr = "httpbin.org"
+target_port = 80
+enabled = true
+mode = "http"
+log_level = "verbose"
+host = "verbose.test.com"

@@ -18,6 +18,8 @@ pub struct Route {
     pub mode: String, // "tcp" or "http"
     #[serde(default)]
     pub host: Option<String>, // Host header matching
+    #[serde(default = "default_log_level")]
+    pub log_level: String, // "none", "basic", "verbose"
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -59,6 +61,7 @@ fn default_max_connections() -> usize { 100 }
 fn default_buffer_size() -> usize { 8 }
 fn default_log_requests() -> bool { true }
 fn default_log_format() -> String { "default".to_string() }
+fn default_log_level() -> String { "basic".to_string() }
 
 impl Default for Config {
     fn default() -> Self {
@@ -112,6 +115,7 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 enabled: false,
                 mode: "tcp".to_string(),
                 host: None,
+                log_level: default_log_level(),
             },
             Route {
                 name: "api-host-routing".to_string(),
@@ -121,6 +125,7 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 enabled: false,
                 mode: "http".to_string(),
                 host: Some("api.example.com".to_string()),
+                log_level: "verbose".to_string(),
             },
             Route {
                 name: "ssh".to_string(),
@@ -130,6 +135,7 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 enabled: false,
                 mode: "tcp".to_string(),
                 host: None,
+                log_level: default_log_level(),
             },
         ],
     };
