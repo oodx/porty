@@ -20,6 +20,10 @@ pub struct Route {
     pub host: Option<String>, // Host header matching
     #[serde(default = "default_log_level")]
     pub log_level: String, // "none", "basic", "verbose"
+    #[serde(default = "default_timeout_seconds")]
+    pub timeout_seconds: u64, // Connection timeout in seconds
+    #[serde(default = "default_max_retries")]
+    pub max_retries: u32, // Max retry attempts
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -62,6 +66,8 @@ fn default_buffer_size() -> usize { 8 }
 fn default_log_requests() -> bool { true }
 fn default_log_format() -> String { "default".to_string() }
 fn default_log_level() -> String { "basic".to_string() }
+fn default_timeout_seconds() -> u64 { 30 }
+fn default_max_retries() -> u32 { 2 }
 
 impl Default for Config {
     fn default() -> Self {
@@ -116,6 +122,8 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 mode: "tcp".to_string(),
                 host: None,
                 log_level: default_log_level(),
+                timeout_seconds: default_timeout_seconds(),
+                max_retries: default_max_retries(),
             },
             Route {
                 name: "api-host-routing".to_string(),
@@ -126,6 +134,8 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 mode: "http".to_string(),
                 host: Some("api.example.com".to_string()),
                 log_level: "verbose".to_string(),
+                timeout_seconds: 10,
+                max_retries: 3,
             },
             Route {
                 name: "ssh".to_string(),
@@ -136,6 +146,8 @@ pub fn generate_example_config(path: &PathBuf) -> Result<()> {
                 mode: "tcp".to_string(),
                 host: None,
                 log_level: default_log_level(),
+                timeout_seconds: default_timeout_seconds(),
+                max_retries: default_max_retries(),
             },
         ],
     };

@@ -24,6 +24,8 @@ pub async fn run_route(
     mode: &str,  // "tcp" or "http"
     host: Option<String>,  // Host header matching for HTTP routes
     log_level: &str, // "none", "basic", "verbose"
+    timeout_seconds: u64, // Connection timeout
+    max_retries: u32, // Max retry attempts
 ) -> Result<()> {
     let semaphore = Arc::new(Semaphore::new(max_connections));
     let listen_addr_full = format!("{}:{}", listen_addr, listen_port);
@@ -44,6 +46,8 @@ pub async fn run_route(
         let route_mode = mode.to_string();
         let route_host = host.clone();
         let route_log_level = log_level.to_string();
+        let route_timeout = timeout_seconds;
+        let route_retries = max_retries;
 
         tokio::spawn(async move {
             let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
@@ -62,7 +66,7 @@ pub async fn run_route(
             // Route based on mode: TCP or HTTP
             let connection_result = if route_mode == "http" {
                 // Use HTTP handler for dynamic routing and host header matching
-                match handle_http_connection(client, route_name.clone(), target_addr.clone(), route_host, log_requests, verbose, &route_log_level).await {
+                match handle_http_connection(client, route_name.clone(), target_addr.clone(), route_host, log_requests, verbose, &route_log_level, route_timeout, route_retries).await {
                     Ok(_) => Ok(()),
                     Err(e) => Err(e),
                 }
@@ -195,6 +199,8 @@ pub async fn run_porty_server(config: Config) -> Result<()> {
                 &route_mode,
                 route.host.clone(),
                 &route.log_level,
+                route.timeout_seconds,
+                route.max_retries,
             ).await {
                 error!("Route {} failed: {}", route.name, e);
             }
@@ -215,6 +221,8 @@ pub async fn run_porty_server(config: Config) -> Result<()> {
         "tcp",  // Main route defaults to TCP
         None,   // Main route has no host matching
         "basic", // Main route uses basic logging
+        30,     // 30 second timeout
+        2,      // 2 retries
     ).await?;
 
     Ok(())

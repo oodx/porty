@@ -36,6 +36,8 @@ pub async fn handle_http_connection(
     log_requests: bool,
     verbose: bool,
     log_level: &str,
+    timeout_seconds: u64,
+    max_retries: u32,
 ) -> Result<()> {
     let client_addr = client.peer_addr()?.to_string();
 
@@ -102,8 +104,8 @@ pub async fn handle_http_connection(
 
         let start_time = std::time::Instant::now();
 
-        // Forward the cleaned request
-        match forward_http_request(request, route, client).await {
+        // Forward the cleaned request with retry logic
+        match forward_http_request_with_retry(request, route, client, timeout_seconds, max_retries).await {
             Ok(response_info) => {
                 if log_requests && log_level != "none" {
                     let duration = start_time.elapsed();
@@ -130,8 +132,7 @@ pub async fn handle_http_connection(
         }
     } else {
         // No dynamic routing, send 400 Bad Request
-        let response = "HTTP/1.1 400 Bad Request\r\n\r\nMissing porty_host and porty_port parameters";
-        client.write_all(response.as_bytes()).await?;
+        let _ = send_error_response(&mut client, 400, "Missing porty_host and porty_port parameters").await;
     }
 
     Ok(())
@@ -153,14 +154,18 @@ async fn parse_http_request(stream: &mut TcpStream) -> Result<HttpRequest> {
     }
 
     if lines.is_empty() {
-        return Err(anyhow::anyhow!("Empty HTTP request"));
+        return Err(anyhow::anyhow!("Malformed HTTP request: Empty request"));
     }
 
     // Parse request line: "GET /path?query HTTP/1.1"
     let request_line = &lines[0];
     let parts: Vec<&str> = request_line.split_whitespace().collect();
     if parts.len() < 2 {
-        return Err(anyhow::anyhow!("Invalid HTTP request line"));
+        return Err(anyhow::anyhow!("Malformed HTTP request: Invalid request line '{}'", request_line));
+    }
+
+    if parts.len() >= 3 && !parts[2].starts_with("HTTP/") {
+        return Err(anyhow::anyhow!("Malformed HTTP request: Invalid HTTP version '{}'", parts[2]));
     }
 
     let method = parts[0].to_string();
@@ -176,7 +181,12 @@ async fn parse_http_request(stream: &mut TcpStream) -> Result<HttpRequest> {
         if let Some(pos) = line.find(':') {
             let key = line[..pos].trim().to_lowercase();
             let value = line[pos + 1..].trim().to_string();
+            if key.is_empty() {
+                return Err(anyhow::anyhow!("Malformed HTTP request: Empty header name"));
+            }
             headers.insert(key, value);
+        } else if !line.trim().is_empty() {
+            return Err(anyhow::anyhow!("Malformed HTTP request: Invalid header format '{}'", line));
         }
     }
 
@@ -229,10 +239,65 @@ fn clean_query_string(query: &str) -> String {
         .join("&")
 }
 
-async fn forward_http_request(
+async fn forward_http_request_with_retry(
     request: HttpRequest,
     route: DynamicRoute,
     mut client: TcpStream,
+    timeout_seconds: u64,
+    max_retries: u32,
+) -> Result<ResponseInfo> {
+    let mut last_error = None;
+
+    for attempt in 0..=max_retries {
+        if attempt > 0 {
+            // Wait before retry (exponential backoff)
+            let delay = std::time::Duration::from_millis(100 * (1u64 << (attempt - 1)));
+            tokio::time::sleep(delay).await;
+        }
+
+        match forward_http_request_with_client(request.clone(), route.clone(), &mut client, timeout_seconds).await {
+            Ok(response) => return Ok(response),
+            Err(e) => {
+                last_error = Some(e);
+                if attempt < max_retries {
+                    stderr!("⚠️  HTTP request failed, retrying... (attempt {}/{})", attempt + 1, max_retries + 1);
+                }
+            }
+        }
+    }
+
+    // Send error response to client after all retries failed
+    let _ = send_error_response(&mut client, 502, "Backend connection failed after retries").await;
+
+    Err(last_error.unwrap())
+}
+
+impl Clone for DynamicRoute {
+    fn clone(&self) -> Self {
+        Self {
+            target_host: self.target_host.clone(),
+            target_port: self.target_port,
+        }
+    }
+}
+
+
+async fn forward_http_request_with_client(
+    request: HttpRequest,
+    route: DynamicRoute,
+    client: &mut TcpStream,
+    timeout_seconds: u64,
+) -> Result<ResponseInfo> {
+    let timeout = std::time::Duration::from_secs(timeout_seconds);
+
+    tokio::time::timeout(timeout, forward_http_request_internal(request, route, client)).await
+        .map_err(|_| anyhow::anyhow!("Request timeout after {} seconds", timeout_seconds))?
+}
+
+async fn forward_http_request_internal(
+    request: HttpRequest,
+    route: DynamicRoute,
+    client: &mut TcpStream,
 ) -> Result<ResponseInfo> {
     // Connect to target
     let target_addr = format!("{}:{}", route.target_host, route.target_port);
@@ -305,4 +370,25 @@ async fn forward_http_request(
         },
         body_size: total_bytes,
     })
+}
+
+async fn send_error_response(client: &mut TcpStream, status_code: u16, message: &str) -> Result<()> {
+    let status_text = match status_code {
+        400 => "Bad Request",
+        404 => "Not Found",
+        500 => "Internal Server Error",
+        502 => "Bad Gateway",
+        503 => "Service Unavailable",
+        504 => "Gateway Timeout",
+        _ => "Error",
+    };
+
+    let body = format!("{} {}", status_code, message);
+    let response = format!(
+        "HTTP/1.1 {} {}\r\nContent-Type: text/plain\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+        status_code, status_text, body.len(), body
+    );
+
+    client.write_all(response.as_bytes()).await?;
+    Ok(())
 }
