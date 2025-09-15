@@ -11,7 +11,11 @@ fn main() {
     let args = bootstrap!();
     options!(&args);
 
-    // TODO: Re-add register_function calls once RSB registry issues are fixed
+    // Register functions for inspect command
+    register_function("cmd_start", "Start the port forwarding proxy");
+    register_function("cmd_generate_config", "Generate example configuration file");
+    register_function("cmd_help", "Show help message");
+    register_function("cmd_version", "Show version information");
 
     // Handle setup commands first
     if pre_dispatch!(&args, {
@@ -38,9 +42,13 @@ fn cmd_start(args: Args) -> i32 {
     }
 }
 
-fn cmd_generate_config(args: Args) -> i32 {
+fn cmd_generate_config(_args: Args) -> i32 {
 
-    let config_path = args.get_or(1, "config.toml");
+    let config_path = if has_var("opt_config") {
+        get_var("opt_config")
+    } else {
+        "config.toml".to_string()
+    };
 
     match generate_example_config(&std::path::PathBuf::from(config_path.clone())) {
         Ok(_) => {

@@ -39,6 +39,7 @@ pub async fn run_route(
         let permit = semaphore.clone().acquire_owned().await?;
         let buffer_size = buffer_size_kb * 1024;
         let route_name = name.to_string();
+        let route_mode = mode.to_string();
 
         tokio::spawn(async move {
             let timestamp = Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
@@ -55,7 +56,7 @@ pub async fn run_route(
             let mut bytes_transferred = 0u64;
 
             // Route based on mode: TCP or HTTP
-            let connection_result = if mode == "http" {
+            let connection_result = if route_mode == "http" {
                 // Use HTTP handler for dynamic routing
                 match handle_http_connection(client, route_name.clone(), log_requests, verbose).await {
                     Ok(_) => Ok(()),

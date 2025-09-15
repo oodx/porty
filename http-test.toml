@@ -1,0 +1,27 @@
+# HTTP Dynamic Routing Test Configuration
+
+# Main TCP route (traditional forwarding)
+listen_addr = "0.0.0.0"
+listen_port = 8080
+target_addr = "127.0.0.1"
+target_port = 3000
+max_connections = 100
+buffer_size_kb = 8
+log_requests = true
+
+# Additional routes for testing
+[[routes]]
+name = "dynamic-http"
+listen_port = 9090
+target_addr = "unused"  # Dynamic routing will override this
+target_port = 0         # Dynamic routing will override this
+enabled = true
+mode = "http"           # Enable HTTP dynamic routing!
+
+[[routes]]
+name = "tcp-forward"
+listen_port = 8081
+target_addr = "127.0.0.1"
+target_port = 3001
+enabled = true
+mode = "tcp"
