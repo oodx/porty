@@ -68,11 +68,11 @@
 - [ ] Currently shows help instead of starting server
 - [ ] Improve UX for default behavior
 
-**SP-008a: Host Header Routing [3 SP]**
-- [ ] Add optional `host` field to route config
-- [ ] Implement Host header matching in http.rs
-- [ ] Route requests based on Host header + dynamic routing
-- [ ] Test multi-domain routing scenarios
+**SP-008a: Host Header Routing [3 SP]** ✅
+- ✅ Add optional `host` field to route config
+- ✅ Implement Host header matching in http.rs
+- ✅ Route requests based on Host header + dynamic routing
+- ✅ Test multi-domain routing scenarios
 
 **SP-008b: Enhanced HTTP Logging [2 SP]** ✅
 - ✅ Add detailed request header logging
@@ -80,11 +80,11 @@
 - ✅ Configurable log levels for HTTP routes ("none", "basic", "verbose")
 - ✅ Performance metrics (response time tracking in ms)
 
-**SP-008c: HTTP Error Handling [3 SP]**
-- [ ] Graceful handling of malformed HTTP requests
-- [ ] Timeout handling for slow backends
-- [ ] Connection error recovery and retry logic
-- [ ] Custom error pages for HTTP routes
+**SP-008c: HTTP Error Handling [3 SP]** ✅
+- ✅ Graceful handling of malformed HTTP requests
+- ✅ Timeout handling for slow backends
+- ✅ Connection error recovery and retry logic
+- ✅ Custom error pages for HTTP routes
 
 **SP-008d: HTTP Cookie Support [3 SP]**
 - [ ] Parse and forward cookies from client requests
