@@ -1,0 +1,23 @@
+// systemd service file: /etc/systemd/system/porty.service
+
+[Unit]
+Description=Porty Port Forwarder
+After=network.target
+
+[Service]
+Type=simple
+User=xnull
+WorkingDirectory=/home/xnull
+ExecStart=/usr/local/bin/porty --config /etc/porty/porty.toml
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
+
+# Simple run
+porty --config ~/porty-codex.toml
+
+# Or with systemd (see service file in artifact)
+sudo systemctl start porty
