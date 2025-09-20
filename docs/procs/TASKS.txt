@@ -48,7 +48,44 @@
 
 ---
 
-## 📋 BACKLOG (Next Sprint Candidates)
+## 🚀 SPRINT 3: Performance & Reliability (Phase 4)
+
+**SP-011: Performance Benchmarking Suite [5 SP]**
+- [ ] Create benchmark harness using criterion.rs
+- [ ] Measure baseline TCP forwarding performance
+- [ ] Benchmark HTTP routing overhead
+- [ ] Document performance characteristics
+- [ ] Create performance regression tests
+
+**SP-012: Connection Pool Optimization [8 SP]**
+- [ ] Implement connection reuse for HTTP mode
+- [ ] Add connection pool metrics
+- [ ] Configurable pool sizing strategies
+- [ ] Health check for pooled connections
+- [ ] Connection timeout management
+
+**SP-013: Enhanced Retry Logic [5 SP]**
+- [ ] Implement exponential backoff for retries
+- [ ] Add jitter to retry delays
+- [ ] Configurable retry policies per route
+- [ ] Dead letter queue for failed requests
+- [ ] Retry metrics and logging
+
+**SP-014: Circuit Breaker Implementation [8 SP]**
+- [ ] Implement circuit breaker pattern
+- [ ] Configurable failure thresholds
+- [ ] Half-open state testing
+- [ ] Circuit breaker metrics
+- [ ] Integration with health checks
+
+**SP-015: Health Check Endpoints [3 SP]**
+- [ ] Add /health endpoint for each route
+- [ ] Configurable health check paths
+- [ ] Backend health monitoring
+- [ ] Health status aggregation
+- [ ] Prometheus-compatible metrics endpoint
+
+## 📋 BACKLOG (Future Sprint Candidates)
 
 **SP-005: HTTP Dynamic Routing Testing [5 SP]** ✅
 - ✅ Create test config with HTTP mode routes
@@ -108,20 +145,20 @@
 
 ## 🐛 TECHNICAL DEBT
 
-**TD-001: Unused PortyArgs Struct [1 SP]**
-- [ ] Remove old PortyArgs struct in args.rs
-- [ ] Clean up unused imports
-- [ ] Full migration to RSB global context
+**TD-001: RSB Documentation Accuracy [1 SP]** ✅
+- ✅ Fixed inflated RSB claims in README
+- ✅ Updated actual line counts (156, not 27)
+- ✅ Corrected architectural descriptions
 
-**TD-002: HTTP Module println! Conversion [1 SP]**
-- [ ] Convert remaining println! calls in http.rs to echo!()
-- [ ] Convert cfg.rs println! calls to echo!()
-- [ ] Consistent RSB output patterns
+**TD-002: Stale Files Cleanup [1 SP]** ✅
+- ✅ Removed porty.log, generate-config, config.toml.bak
+- ✅ Moved test TOML files to examples/
+- ✅ Cleaned up redundant files
 
-**TD-003: Code Cleanup [2 SP]**
-- [ ] Remove dead code paths
-- [ ] Fix compiler warnings
-- [ ] Optimize imports
+**TD-003: Configuration Documentation [2 SP]**
+- [ ] Document 'host' field belongs to Route level, not main config
+- [ ] Add examples of Host header vs query parameter routing
+- [ ] Clarify TCP vs HTTP mode configuration
 
 ---
 

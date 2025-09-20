@@ -1,0 +1,43 @@
+================================================================================
+ ⚡ PORTY - 30-SECOND CONTEXT
+================================================================================
+
+🎯 **Current Focus**: High-Performance TCP/HTTP Dynamic Proxy Development
+
+📊 **Project Status**:
+- ✅ Core TCP/HTTP routing functionality
+- 🔴 Enhancing dynamic routing capabilities
+- ⬆️ Performance optimization and RSB framework integration
+
+🚨 **Critical Context**:
+- **Blockers**: Complex query parameter routing implementation
+- **MVP**: Stable, flexible proxy with minimal configuration
+- **Current Sprint**: Improve HTTP routing flexibility
+
+📋 **Current Tasks**:
+1. Refine query parameter routing mechanisms
+2. Optimize performance benchmarks
+3. Expand test coverage for edge cases
+4. Update documentation for new routing features
+
+🏗️ **Architecture**:
+- **Branch**: main
+- **Key Commands**:
+  * cargo run --release
+  * cargo test
+  * ./bin/validate-docs.sh
+
+⚡ **Immediate Next Steps**:
+1. Read docs/procs/CONTINUE.md for latest status
+2. Check docs/procs/SPRINT.txt for detailed tasks
+3. Review performance optimization strategies
+
+🚨 **Critical Rules**:
+- Maintain zero-configuration proxy design
+- Prioritize performance and flexibility
+- Comprehensive test coverage required
+- Document all design decisions
+
+================================================================================
+Last Updated: 2025-09-20
+Next Refresh: When project focus shifts

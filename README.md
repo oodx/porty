@@ -301,24 +301,28 @@ Porty demonstrates the power of the **RSB (Rebel String-Biased) framework** with
 ### RSB Framework Integration
 
 **Core Benefits Achieved:**
-- **78% code reduction** in main.rs (122 → 27 lines) while gaining features
 - **Professional CLI** with built-in commands: `help`, `inspect`, `stack`
 - **Global context management** via `opt_*` variables
 - **Structured output** using `echo!()` and `stderr!()` macros
-- **Zero-configuration dispatch** with automatic command routing
+- **Command routing** with RSB context integration
 
 **File Structure:**
-- **`main.rs`**: Just 27 lines! RSB dispatch pattern with `dispatch!()` and `pre_dispatch!()`
+- **`main.rs`**: 156 lines with RSB integration and command handling
 - **`cfg.rs`**: Configuration file handling and generation using RSB patterns
 - **`net.rs`**: TCP/HTTP routing logic with RSB context integration
 - **`http.rs`**: HTTP parsing and dynamic routing with RSB error handling
 
 ### RSB Patterns in Action
 
-**Dispatch Pattern:**
+**RSB Integration Pattern:**
 ```rust
-// main.rs - Complete application in 27 lines!
-dispatch!("start", || run_porty_server(config));
+// main.rs - RSB integration with command handling
+bootstrap!(); // Initialize RSB context
+match args.first().map(|s| s.as_str()) {
+    Some("start") => run_porty_server(config),
+    Some("help") => display_help(),
+    // ... other commands
+}
 ```
 
 **Global Context:**

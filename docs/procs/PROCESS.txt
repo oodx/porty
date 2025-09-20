@@ -1,0 +1,108 @@
+================================================================================
+ 🏗️ PORTY PROJECT WORKFLOW PROCESS
+================================================================================
+
+# PROJECT STRUCTURE & KEY DOCUMENTS
+
+📁 **Core Documents**:
+- START.txt: Single entry point for project context
+- docs/procs/QUICK_REF.txt: 30-second essential context
+- docs/procs/CONTINUE.md: Session status & handoffs
+- docs/procs/SPRINT.txt: Current iteration tasks
+- docs/ref/ARCHITECTURE.md: System design details
+
+# SELF-HYDRATING WORKFLOW PROCESS
+
+## Step 1: Context Hydration
+1. Read START.txt for project overview
+2. Review docs/procs/QUICK_REF.txt for current focus
+3. Check docs/procs/CONTINUE.md for latest session context
+4. Examine docs/procs/SPRINT.txt for active tasks
+
+## Step 2: Phase Detection
+- **Development**: Active feature implementation
+- **Refactoring**: Performance or architectural improvements
+- **Testing**: Validation of new features or bug fixes
+- **Documentation**: Updating reference materials
+
+## Step 3: Work Execution Patterns
+### Development Phase
+- Always update CONTINUE.md after each session
+- Use ./bin/validate-docs.sh before committing changes
+- Ensure test coverage for new features
+- Document design decisions in docs/ref/
+
+### Testing Phase
+- Run comprehensive test suite
+- Update performance benchmarks
+- Validate HTTP routing scenarios
+- Capture and document edge cases
+
+## Step 4: Session Closure & Handoff
+- Update CONTINUE.md with:
+  * Completed tasks
+  * Key decisions
+  * Blockers or challenges
+- Update SPRINT.txt to reflect progress
+- Run ./bin/validate-docs.sh to ensure documentation integrity
+
+# PROJECT STATUS QUICK REFERENCE
+
+## Current Priorities
+- High Performance TCP/HTTP Proxying
+- Dynamic Routing Enhancements
+- RSB Framework Integration
+
+## Progress Tracking
+- Refer to docs/procs/SPRINT.txt for detailed task status
+- Check docs/procs/TASKS.txt for comprehensive task list
+
+# COMMON WORKFLOWS
+
+## Creating a New Feature
+1. Update SPRINT.txt with feature details
+2. Create a feature branch
+3. Implement with test coverage
+4. Update docs/ref/ with implementation notes
+5. Run validation scripts
+6. Update CONTINUE.md with progress
+
+## Performance Optimization
+1. Benchmark current implementation
+2. Identify bottlenecks
+3. Create optimization ticket
+4. Implement changes
+5. Re-benchmark and document improvements
+
+# AGENT QUICK START GUIDE
+
+## Essential Context
+- Rust-based high-performance proxy
+- Dynamic HTTP routing
+- Minimal configuration required
+- RSB framework as core architecture
+
+## Workflow Rules
+- Always validate documentation
+- Prioritize performance and flexibility
+- Document all design decisions
+- Maintain comprehensive test coverage
+
+# REFERENCE LINKS
+
+## Priority Documents
+1. docs/procs/QUICK_REF.txt
+2. docs/procs/CONTINUE.md
+3. docs/ref/ARCHITECTURE.md
+4. bin/validate-docs.sh
+
+## Testing & Validation
+- cargo test (comprehensive test suite)
+- ./bin/validate-docs.sh (documentation integrity)
+
+================================================================================
+ 🚀 RESULT: Streamlined, Self-Hydrating Workflow System
+================================================================================
+
+Last Updated: 2025-09-20
+Next Review: When project scope or architecture changes significantly

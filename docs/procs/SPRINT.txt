@@ -1,0 +1,44 @@
+# Current Sprint 3 - Performance & Reliability (Phase 4)
+
+## 🎯 Sprint Goal
+Implement comprehensive performance benchmarking and reliability enhancements to ensure
+Porty meets production-grade performance and availability targets.
+
+## 📋 Active Tasks
+
+### SP-011: Performance Benchmarking Suite [5 SP] - Not Started
+- [ ] Create benchmark harness using criterion.rs
+- [ ] Measure baseline TCP forwarding performance
+- [ ] Benchmark HTTP routing overhead
+- [ ] Document performance characteristics
+- [ ] Create performance regression tests
+
+### SP-012: Connection Pool Optimization [8 SP] - Not Started
+- [ ] Implement connection reuse for HTTP mode
+- [ ] Add connection pool metrics
+- [ ] Configurable pool sizing strategies
+- [ ] Health check for pooled connections
+- [ ] Connection timeout management
+
+### SP-013: Enhanced Retry Logic [5 SP] - Not Started
+- [ ] Implement exponential backoff for retries
+- [ ] Add jitter to retry delays
+- [ ] Configurable retry policies per route
+- [ ] Dead letter queue for failed requests
+- [ ] Retry metrics and logging
+
+## 🚀 Sprint Overview
+- **Total Story Points**: 29 SP (SP-011 through SP-015)
+- **Focus**: Performance benchmarking and reliability patterns
+- **Key Deliverables**: Benchmark suite, connection pooling, retry logic
+
+## 📊 Sprint Metrics
+- Started: 2025-09-20 (Phase 4)
+- Target Completion: TBD
+- Story Points: 29 SP planned
+- Progress: 0% (just transitioned from Phase 3)
+
+## 🔗 Related Documents
+- docs/procs/TASKS.txt - Full task backlog
+- docs/procs/CONTINUE.md - Latest session status
+- docs/procs/PROCESS.txt - Workflow guidelines
